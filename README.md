@@ -30,8 +30,6 @@ The objective is to showcase practical SQL skills relevant to:
 
 ### Investigation 1 – Funnel Account Behaviour
 Developed SQL logic to identify customers receiving funds from many counterparties and redistributing most of those funds outward.
-### Sample Output
-
 
 ## SQL Techniques Demonstrated
 
