@@ -32,9 +32,6 @@ The objective is to showcase practical SQL skills relevant to:
 Developed SQL logic to identify customers receiving funds from many counterparties and redistributing most of those funds outward.
 ### Sample Output
 
-See investigation results:
-
-![Funnel Account Results](AML_SQL_PROJECT/Screenshots/funnel_account_results.png)
 
 ## SQL Techniques Demonstrated
 
