@@ -34,7 +34,7 @@ Developed SQL logic to identify customers receiving funds from many counterparti
 
 See investigation results:
 
-![Funnel Account Results](Screenshots/funnel_account_results.png)
+![Funnel Account Results](AML_SQL_PROJECT/Screenshots/funnel_account_results.png)
 
 ## SQL Techniques Demonstrated
 
