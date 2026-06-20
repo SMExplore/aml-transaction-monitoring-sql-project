@@ -63,3 +63,67 @@ Through this investigation I practiced:
 * Applying behavioural monitoring concepts
 * Analysing customer transaction patterns
 * Translating AML typologies into executable SQL rules
+
+# Investigation 2: Dormant Account Reactivation
+
+## Objective
+
+Detect customers exhibiting prolonged inactivity followed by potentially unusual transaction activity.
+
+## Detection Logic
+
+### Step 1 – Identify Dormancy Events
+
+A customer was considered dormant when the gap between two consecutive transactions exceeded 180 days.
+
+### Step 2 – Measure Post-Reactivation Activity
+
+For each reactivation event, transaction activity occurring within 30 days of reactivation was measured.
+
+Metrics calculated:
+
+* Total transaction volume
+* Total transaction count
+* Annual income
+* Expected monthly volume
+* Expected transaction count
+
+### Step 3 – Apply Behavioural Thresholds
+
+The following conditions were used to highlight potentially unusual activity:
+
+* Volume > 2 × Expected Monthly Volume
+* Volume > Annual Income
+* Dormancy Period > 300 Days
+
+### Step 4 – Behavioural Baseline Comparison
+
+A volume multiple metric was calculated:
+
+```text
+Actual 30-Day Volume / Expected Monthly Volume
+```
+
+This enabled comparison of observed activity against expected customer behaviour.
+
+## Example Observations
+
+Examples identified during testing included:
+
+* Customers generating transaction volumes greater than their annual income shortly after reactivation.
+* Customers whose activity exceeded expected monthly volume by more than 10x.
+* Customers reactivating after more than 500 days of inactivity.
+
+## AML Interpretation
+
+Dormant account reactivation does not inherently indicate suspicious activity. However, reactivation combined with significant behavioural changes may warrant further investigation.
+
+Potential explanations include:
+
+* Account takeover
+* Money mule activity
+* Layering behaviour
+* Legitimate changes in customer circumstances
+
+The objective of the rule is to identify behavioural anomalies requiring review rather than to determine suspicious activity directly.
+
