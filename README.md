@@ -30,21 +30,16 @@ The objective is to showcase practical SQL skills relevant to:
 
 ### Investigation 1 – Funnel Account Behaviour
 Developed SQL logic to identify customers receiving funds from many counterparties and redistributing most of those funds outward.
+### Investigation 2 - Dormant Account Reactivation
+Detect customers exhibiting prolonged inactivity followed by potentially unusual transaction activity.
 
 ## SQL Techniques Demonstrated
 
-- Joins
-- Aggregations
-- GROUP BY
-- HAVING
-- Common Table Expressions (CTEs)
-- Behavioural Analysis
-- Ratio-based Detection Logic
+- Joins, Aggregations, GROUP BY, HAVING, Common Table Expressions (CTEs), Behavioural Analysis, Ratio-based Detection Logic, LAG(), 
 
 ## Future Enhancements
 
 - Structuring Detection 
-- Dormant Account Reactivation
 - Velocity monitoring
 - Counterparty clustering
 - Alert generation simulation
