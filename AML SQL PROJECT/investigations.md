@@ -1,129 +1,133 @@
-# Investigation 1: Funnel Account Behaviour Detection
+# AML Transaction Monitoring Investigation Log
+
+---
+
+# Investigation 01 – Funnel Account / Pass-Through Behaviour
 
 ## Objective
 
-Identify customers who receive funds from multiple counterparties and subsequently transfer a significant proportion of those funds out of their accounts.
+Identify customers receiving funds from multiple counterparties and subsequently transferring a significant proportion of those funds out of their accounts.
 
-This investigation aims to detect potential funnel account or pass-through account behaviour, which can be associated with layering activity, money mule networks, informal remittance activity, or other unusual fund movement patterns.
+## Business Rationale
 
-## Detection Methodology
+Funnel or pass-through accounts are commonly monitored within Transaction Monitoring programmes as they may indicate money mule activity, layering behaviour, informal value transfer, or other unusual movement of funds.
 
-The investigation was performed in two stages.
+## Detection Logic
 
-### Stage 1: Candidate Population Identification
+### Stage 1 – Candidate Population
 
-Customers were selected if they met both of the following criteria:
+Customers satisfying both conditions:
 
-* Received funds from at least 10 unique counterparties
-* Total inbound transaction volume exceeded 5 times their declared annual income
+* At least 10 unique inbound counterparties
+* Total inbound volume greater than 5 × annual income
 
-This step was designed to identify customers whose inbound activity appeared inconsistent with their expected financial profile.
+### Stage 2 – Outbound Behaviour
 
-### Stage 2: Pass-Through Behaviour Assessment
+For the shortlisted customers:
 
-For the identified population, outbound transaction activity was analysed.
+* Calculate total outbound transaction volume
+* Calculate unique outbound counterparties
 
-Customers were retained if:
+Customers were retained where:
 
-* Outbound transaction volume exceeded 80% of inbound transaction volume
-* Outbound transaction volume remained lower than inbound transaction volume
+* Outbound volume exceeded 80% of inbound volume
+* Outbound volume remained lower than inbound volume
 
-This logic was intended to identify accounts where incoming funds were rapidly redistributed rather than retained.
-
-## SQL Techniques Used
+## SQL Techniques
 
 * Common Table Expressions (CTEs)
 * Aggregations
 * HAVING clauses
 * Multi-table joins
-* Distinct counterparty analysis
-* Behavioural threshold logic
+* Behavioural threshold analysis
 
-## Key Risk Indicators
+## Key Learning
 
-The investigation combines multiple behavioural indicators:
+A single indicator is rarely sufficient for transaction monitoring. Combining multiple behavioural characteristics significantly improves the quality of candidate selection.
 
-1. Large number of unique inbound counterparties
-2. Inbound volume significantly exceeding customer income
-3. High outbound volume relative to inbound volume
-4. Potential pass-through fund movement patterns
+---
 
-## Investigation Query
-
-See:
-
-sql/01_funnel_account_behaviour.sql
-
-## Learning Outcomes
-
-Through this investigation I practiced:
-
-* Building AML detection logic using SQL
-* Creating multi-stage investigation workflows
-* Applying behavioural monitoring concepts
-* Analysing customer transaction patterns
-* Translating AML typologies into executable SQL rules
-
-# Investigation 2: Dormant Account Reactivation
+# Investigation 02 – Dormant Account Reactivation
 
 ## Objective
 
-Detect customers exhibiting prolonged inactivity followed by potentially unusual transaction activity.
+Identify customers who remained inactive for extended periods and subsequently resumed activity at levels inconsistent with their expected behaviour.
 
-## Detection Logic
+## Business Rationale
 
-### Step 1 – Identify Dormancy Events
+Dormant account reactivation is a common Transaction Monitoring scenario. While reactivation is often legitimate, significant deviations from historical behaviour may indicate account takeover, money mule activity, layering, or other financial crime risks.
 
-A customer was considered dormant when the gap between two consecutive transactions exceeded 180 days.
+## Development Process
 
-### Step 2 – Measure Post-Reactivation Activity
+Rather than defining a fixed rule immediately, the investigation was developed iteratively.
 
-For each reactivation event, transaction activity occurring within 30 days of reactivation was measured.
+### Version 1
 
-Metrics calculated:
+Initial objective:
+
+* Identify customers with more than 180 days between consecutive transactions.
+
+A `LAG()` window function was used to calculate the previous transaction date for every customer.
+
+### Version 2
+
+The investigation was expanded to analyse activity occurring within 30 days of the reactivation event.
+
+For each reactivated customer, the following metrics were calculated:
 
 * Total transaction volume
-* Total transaction count
+* Transaction count
+* Customer type
+* Country
+* Risk rating
 * Annual income
 * Expected monthly volume
 * Expected transaction count
 
-### Step 3 – Apply Behavioural Thresholds
+### Version 3
 
-The following conditions were used to highlight potentially unusual activity:
+Initial review showed that transaction counts remained relatively low after reactivation, but transaction values were significantly higher than expected for several customers.
 
-* Volume > 2 × Expected Monthly Volume
-* Volume > Annual Income
-* Dormancy Period > 300 Days
+As a result, the investigation shifted from a transaction-count focus to a behavioural-volume focus.
 
-### Step 4 – Behavioural Baseline Comparison
+### Version 4 (Current Rule)
 
-A volume multiple metric was calculated:
+Customers are retained when at least one of the following conditions is satisfied:
 
-```text
-Actual 30-Day Volume / Expected Monthly Volume
-```
+* Total 30-day volume exceeds **2 × Expected Monthly Volume**
+* Total 30-day volume exceeds **Annual Income**
+* Dormancy period exceeds **300 days**
 
-This enabled comparison of observed activity against expected customer behaviour.
+An additional metric was introduced:
 
-## Example Observations
+**Volume Multiple = Actual 30-Day Volume / Expected Monthly Volume**
 
-Examples identified during testing included:
+This allows customer behaviour to be compared against an expected baseline rather than using absolute values alone.
 
-* Customers generating transaction volumes greater than their annual income shortly after reactivation.
-* Customers whose activity exceeded expected monthly volume by more than 10x.
+## Sample Observations
+
+The investigation identified examples of:
+
+* Customers generating transaction volumes greater than their declared annual income shortly after reactivation.
+* Customers exceeding expected monthly transaction volume by more than 10×.
 * Customers reactivating after more than 500 days of inactivity.
 
-## AML Interpretation
+These observations demonstrate how combining temporal analysis with behavioural thresholds produces more meaningful candidate populations than dormancy alone.
 
-Dormant account reactivation does not inherently indicate suspicious activity. However, reactivation combined with significant behavioural changes may warrant further investigation.
+## SQL Techniques Demonstrated
 
-Potential explanations include:
+* Window Functions (`LAG`)
+* Date and interval calculations
+* Common Table Expressions (CTEs)
+* Behavioural monitoring logic
+* Aggregations
+* Threshold-based filtering
+* Customer profile enrichment
 
-* Account takeover
-* Money mule activity
-* Layering behaviour
-* Legitimate changes in customer circumstances
+## Analyst Notes
 
-The objective of the rule is to identify behavioural anomalies requiring review rather than to determine suspicious activity directly.
+One important learning from this investigation was that threshold selection should be data-driven.
 
+The initial assumption was that dormant accounts would reactivate with unusually high transaction counts. However, exploratory analysis showed that the more meaningful signal was unusually high transaction volume relative to expected customer behaviour.
+
+This resulted in refining the rule to incorporate expected monthly volume and annual income comparisons, making the investigation more aligned with behavioural transaction monitoring practices.
