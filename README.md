@@ -32,6 +32,8 @@ The objective is to showcase practical SQL skills relevant to:
 Developed SQL logic to identify customers receiving funds from many counterparties and redistributing most of those funds outward.
 ### Investigation 2 - Dormant Account Reactivation
 Detect customers exhibiting prolonged inactivity followed by potentially unusual transaction activity.
+### Investigation 03 – Structuring / Smurfing Detection
+Identify customers potentially splitting cash deposits into multiple smaller transactions.
 
 ## SQL Techniques Demonstrated
 
