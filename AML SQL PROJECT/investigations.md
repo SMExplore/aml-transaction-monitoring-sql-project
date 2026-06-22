@@ -131,3 +131,131 @@ One important learning from this investigation was that threshold selection shou
 The initial assumption was that dormant accounts would reactivate with unusually high transaction counts. However, exploratory analysis showed that the more meaningful signal was unusually high transaction volume relative to expected customer behaviour.
 
 This resulted in refining the rule to incorporate expected monthly volume and annual income comparisons, making the investigation more aligned with behavioural transaction monitoring practices.
+
+# Investigation 03 – Structuring / Smurfing Detection
+
+## Objective
+
+Identify customers potentially splitting cash deposits into multiple smaller transactions over time.
+
+## Business Rationale
+
+Structuring (also known as smurfing) is a common money laundering typology in which larger amounts are broken into multiple smaller deposits to avoid detection or reporting thresholds.
+
+The purpose of this investigation was not to identify large deposits, but rather to identify behavioural patterns consistent with repeated cash deposit structuring.
+
+---
+
+## Investigation Development
+
+### Version 1 – Daily Cash Deposit Analysis
+
+The investigation began by analysing cash deposit activity at a customer-day level.
+
+Metrics calculated:
+
+* Daily deposit volume
+* Daily deposit count
+
+Candidate customers were identified where:
+
+* Daily deposit volume exceeded expected monthly volume
+* Deposit count was at least 2
+
+This produced a small candidate population for further review.
+
+### Observation
+
+The initial query identified only a limited number of customer-days.
+
+This suggested that the thresholds were highly selective and required further validation.
+
+---
+
+### Version 2 – Transaction Drill-Down
+
+The candidate population was joined back to the transaction table to review the underlying deposits.
+
+Example patterns observed:
+
+* Multiple cash deposits on the same day
+* Deposits of similar amounts
+* Deposits clustered within a short period
+
+Examples included:
+
+* 9,397 and 9,434 on the same day
+* 8,183, 8,009 and 9,526 on the same day
+
+This provided stronger evidence of potential deposit splitting behaviour.
+
+---
+
+### Version 3 – Recurrence Analysis
+
+A key question emerged:
+
+Was the behaviour a one-off event or a repeated pattern?
+
+To answer this, suspicious customer-days were aggregated by customer.
+
+Results:
+
+| Customer  | Suspicious Days |
+| --------- | --------------- |
+| CUST00105 | 10              |
+| CUST00009 | 1               |
+| CUST00177 | 1               |
+| CUST00995 | 1               |
+
+### Observation
+
+Most customers appeared only once.
+
+However, CUST00105 exhibited the pattern across ten separate days spanning multiple months.
+
+This significantly increased the risk relevance of the behaviour.
+
+---
+
+### Version 4 – Final Interpretation
+
+The investigation demonstrated that repeated behaviour was a more meaningful signal than a single occurrence.
+
+The strongest indicator was not:
+
+* Large cash deposits
+
+but rather:
+
+* Multiple cash deposits
+* Similar deposit amounts
+* Repeated occurrence across multiple dates
+
+This transformed the investigation from a simple cash activity review into a behavioural structuring detection exercise.
+
+---
+
+## SQL Techniques Demonstrated
+
+* Common Table Expressions (CTEs)
+* Date bucketing
+* Aggregations
+* Behavioural threshold analysis
+* Multi-stage investigations
+* Transaction drill-down analysis
+* Customer enrichment
+* Pattern validation
+
+---
+
+## Key Learning
+
+An important lesson from this investigation was that transaction monitoring rules should be iteratively refined.
+
+The original hypothesis focused on identifying unusual cash deposit activity.
+
+Reviewing the underlying transactions revealed that recurring behavioural patterns provided a stronger signal than transaction value alone.
+
+This mirrors the process of transaction monitoring rule tuning, where candidate populations are reviewed and thresholds are refined based on observed behaviour.
+
