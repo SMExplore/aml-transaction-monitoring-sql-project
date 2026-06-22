@@ -41,7 +41,6 @@ Identify customers potentially splitting cash deposits into multiple smaller tra
 
 ## Future Enhancements
 
-- Structuring Detection 
 - Velocity monitoring
 - Counterparty clustering
 - Alert generation simulation
