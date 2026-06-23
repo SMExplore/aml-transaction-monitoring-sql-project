@@ -34,6 +34,9 @@ Developed SQL logic to identify customers receiving funds from many counterparti
 Detect customers exhibiting prolonged inactivity followed by potentially unusual transaction activity.
 ### Investigation 03 – Structuring / Smurfing Detection
 Identify customers potentially splitting cash deposits into multiple smaller transactions.
+### Investigation 04 – Transaction Velocity Spike Analysis
+Identify customers whose transaction frequency significantly exceeded their historical baseline.
+
 
 ## SQL Techniques Demonstrated
 
@@ -41,7 +44,6 @@ Identify customers potentially splitting cash deposits into multiple smaller tra
 
 ## Future Enhancements
 
-- Velocity monitoring
 - Counterparty clustering
 - Alert generation simulation
 - Case management simulation
