@@ -259,3 +259,117 @@ Reviewing the underlying transactions revealed that recurring behavioural patter
 
 This mirrors the process of transaction monitoring rule tuning, where candidate populations are reviewed and thresholds are refined based on observed behaviour.
 
+# Investigation 04 – Transaction Velocity Spike Analysis
+
+## Objective
+
+Identify customers whose monthly transaction frequency significantly exceeded their historical baseline.
+
+## Business Rationale
+
+Transaction Monitoring systems frequently use velocity-based rules to identify sudden increases in account activity that may indicate account takeover, money mule activity, fraud, or changes in customer behaviour.
+
+The objective was to determine whether transaction frequency anomalies could be detected using behavioural baselines.
+
+---
+
+## Investigation Development
+
+### Version 1 – Monthly Transaction Counts
+
+Monthly transaction counts were calculated for every customer.
+
+Metrics calculated:
+
+- Customer ID
+- Transaction Month
+- Monthly Transaction Count
+
+### Version 2 – Historical Baseline
+
+A customer-specific baseline was created using a window function.
+
+For each customer:
+
+Average Monthly Transaction Count = Historical Average Transaction Count
+
+This enabled comparison against the customer's own historical behaviour rather than against arbitrary thresholds.
+
+### Version 3 – Spike Multiple
+
+A behavioural metric was introduced:
+
+Spike Multiple = Monthly Transaction Count / Average Monthly Transaction Count
+
+This highlighted months where activity significantly exceeded historical norms.
+
+### Version 4 – Candidate Review
+
+Additional customer attributes were added:
+
+- Risk Rating
+- Customer Type
+- Country
+- Expected Transaction Count
+
+Candidate months with at least 15 transactions were reviewed.
+
+---
+
+## Findings
+
+Several customers exhibited transaction counts between 3x and 6x their historical monthly average.
+
+Examples included:
+
+- Customers averaging fewer than 3 monthly transactions who subsequently generated 15–20 transactions in a single month.
+- Customers exhibiting frequency spikes greater than 4x historical behaviour.
+
+However, review of the results indicated that many of the highest multiples were driven by very low historical baselines rather than exceptionally high transaction volumes.
+
+---
+
+## Key Observation
+
+A large spike multiple does not necessarily imply suspicious behaviour.
+
+For example:
+
+Average Monthly Count = 2
+
+Current Month Count = 10
+
+Spike Multiple = 5x
+
+Although mathematically significant, the underlying transaction volume may still be relatively modest.
+
+---
+
+## Conclusion
+
+The methodology successfully identified frequency anomalies but generated a population with limited investigative value.
+
+This investigation demonstrated the importance of:
+
+- Threshold calibration
+- Alert quality assessment
+- False-positive reduction
+- Rule tuning
+
+Future enhancements could include:
+
+- Hourly velocity analysis
+- Daily velocity analysis
+- Volume-based thresholds
+- Combined behavioural indicators
+
+---
+
+## SQL Techniques Demonstrated
+
+- DATE_TRUNC()
+- Window Functions (AVG OVER)
+- Behavioural Baselines
+- Anomaly Scoring
+- Customer Enrichment
+- Rule Validation
