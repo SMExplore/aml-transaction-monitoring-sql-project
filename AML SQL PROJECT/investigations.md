@@ -373,3 +373,171 @@ Future enhancements could include:
 - Anomaly Scoring
 - Customer Enrichment
 - Rule Validation
+
+# Investigation 05 – Rapid Movement of Funds (Rule Validation Exercise)
+
+## Objective
+
+Rapid movement of funds is a common AML typology where money enters an account and is quickly transferred elsewhere with little retention of funds. Such behaviour may indicate layering, funnel account activity, mule account usage, or other forms of financial crime.
+
+The objective of this investigation was to identify customers who rapidly moved funds after receiving them and evaluate whether this behaviour could be detected using SQL-based transaction monitoring logic.
+
+---
+
+## Initial Hypothesis
+
+Customers exhibiting rapid movement behaviour would:
+
+* Receive incoming funds
+* Transfer a significant portion of those funds out shortly afterwards
+* Retain little of the incoming amount
+
+A high ratio of outgoing funds to incoming funds was expected to highlight potential pass-through account behaviour.
+
+---
+
+## Iteration 1 – Transaction Pair Analysis
+
+### Methodology
+
+The first approach attempted to identify incoming transactions followed by outgoing transactions within a 24-hour window.
+
+The logic matched:
+
+* Incoming transaction (IN)
+* Outgoing transaction (OUT)
+* Same customer
+* Outgoing transaction occurring within 24 hours of the incoming transaction
+
+### Example Results
+
+| Customer  | Incoming Amount | Outgoing Amount | Time Gap |
+| --------- | --------------- | --------------- | -------- |
+| CUST00001 | 9,283.95        | 2,295.92        | 15 hours |
+| CUST00001 | 4,110.26        | 1,555.88        | 11 hours |
+
+### Findings
+
+The query successfully identified transactions occurring close together in time. However, the same incoming transaction was often matched against multiple outgoing transactions.
+
+This created a many-to-many relationship and made it difficult to determine whether the outgoing activity was genuinely related to the incoming funds.
+
+### Conclusion
+
+The approach generated excessive noise and did not accurately measure pass-through behaviour.
+
+---
+
+## Iteration 2 – Daily Flow Analysis
+
+### Methodology
+
+To reduce noise, transactions were aggregated at customer-day level.
+
+For each customer and day:
+
+* Total Incoming Volume
+* Total Outgoing Volume
+* Incoming Transaction Count
+* Outgoing Transaction Count
+
+were calculated.
+
+A Pass Through Ratio was then created:
+
+Pass Through Ratio = Outgoing Volume / Incoming Volume
+
+---
+
+## Iteration 3 – Threshold Tuning
+
+The following thresholds were applied:
+
+* Incoming Volume >= 5,000
+* Pass Through Ratio between 0.80 and 1.00
+
+The intention was to identify customers moving 80%–100% of incoming funds out on the same day.
+
+---
+
+## Sample Results
+
+| Customer  | Incoming Volume | Outgoing Volume | Pass Through Ratio |
+| --------- | --------------- | --------------- | ------------------ |
+| CUST00412 | 37,249          | 37,249          | 0.9999             |
+| CUST00103 | 46,649          | 46,325          | 0.9931             |
+| CUST00849 | 50,543          | 49,916          | 0.9876             |
+
+These customers appeared to move almost all incoming funds out on the same day.
+
+---
+
+## Customer Profile Review
+
+To validate the alerts, customer information was enriched from the customer master table.
+
+Example matches:
+
+| Customer  | Type     | Annual Income | Expected Monthly Volume |
+| --------- | -------- | ------------- | ----------------------- |
+| CUST00412 | Business | 462,800       | 19,700                  |
+| CUST00103 | Business | 1,633,600     | 118,300                 |
+| CUST00849 | Business | 1,563,300     | 99,200                  |
+
+The highest-ranked results were predominantly business customers with large expected transaction volumes.
+
+---
+
+## Key Findings
+
+The rule successfully identified customers exhibiting high same-day pass-through behaviour.
+
+However, review of customer profiles showed that most alerts were generated on legitimate business customers whose transaction activity was consistent with their expected business operations.
+
+This indicated that the rule was detecting normal commercial cash flow rather than suspicious rapid movement.
+
+---
+
+## Lessons Learned
+
+Several important transaction monitoring lessons emerged from this exercise:
+
+1. A technically correct SQL query does not necessarily detect the intended financial crime behaviour.
+
+2. Rapid movement metrics should not be assessed in isolation.
+
+3. Customer context is critical when evaluating transaction monitoring alerts.
+
+4. Rule thresholds must be validated against actual customer populations to reduce false positives.
+
+5. Effective TM scenarios often require multiple dimensions of risk, including customer profile, transaction behaviour, historical activity, and counterparty relationships.
+
+---
+
+## Final Assessment
+
+This investigation should be considered a Rule Validation Exercise rather than a successful detection scenario.
+
+While the SQL logic correctly identified high pass-through activity, the resulting alert population consisted primarily of legitimate business customers.
+
+Future enhancements could include:
+
+* Comparing activity against customer historical baselines
+* Incorporating balance movements
+* Including counterparty concentration analysis
+* Applying customer-type-specific thresholds
+* Combining pass-through behaviour with high-risk jurisdiction exposure
+
+---
+
+## Skills Demonstrated
+
+* Common Table Expressions (CTEs)
+* Conditional Aggregation
+* Behavioural Analytics
+* Ratio Analysis
+* Customer Enrichment
+* Threshold Tuning
+* Rule Validation
+* False Positive Analysis
+* AML Transaction Monitoring Methodology
