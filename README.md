@@ -36,7 +36,8 @@ Detect customers exhibiting prolonged inactivity followed by potentially unusual
 Identify customers potentially splitting cash deposits into multiple smaller transactions.
 ### Investigation 04 – Transaction Velocity Spike Analysis
 Identify customers whose transaction frequency significantly exceeded their historical baseline.
-
+### Investigation 05 – Rapid Movement of Funds (Rule Validation)
+Identify customers exhibiting pass-through behaviour by moving most incoming funds out on the same day.
 
 ## SQL Techniques Demonstrated
 
