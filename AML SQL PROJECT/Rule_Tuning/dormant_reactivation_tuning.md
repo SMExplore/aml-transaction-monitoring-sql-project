@@ -1,12 +1,13 @@
 1. Initial Rule
 
-Dormancy >180 days
-Review customer activity within 30 days of reactivation
-Alert if:
-  Transaction Volume > 2 × Expected Monthly Volume, OR
-  Dormancy Period > 300 Days
+- Dormancy >180 days
+- Review customer activity within 30 days of reactivation
+- Alert if:
+  - Transaction Volume > 2 × Expected Monthly Volume, OR
+  - Dormancy Period > 300 Days
 
 2. Threshold Experiments
+
 | Version | Change Tested | Alerts Generated |Reduction vs Baseline| Comments |
 | :--- | :---: | ---: | :--- | :---: |
 |V1|Dormancy > 180 days|11|-|Baseline rule capturing all qualifying reactivation events.|
@@ -24,9 +25,11 @@ Insight: The dormancy threshold had a direct impact on alert generation. Increas
 Insight: Increasing the reactivation volume threshold from 2× to 5× Expected Monthly Volume did not reduce the alert population. This indicates that, within the current dataset, the shortlisted customers already exhibited substantial deviations from expected behaviour or continued to qualify through the alternative prolonged dormancy condition (>300 days). Consequently, the volume threshold was not the primary driver of alert generation.
 
 3. Rule Tuning Summary
-|Parameter Tested	| Impact |	Assessment
-Dormancy Threshold |	High |	Primary tuning parameter influencing alert volume and sensitivity.|
-Reactivation Volume Multiple |	Low |	Minimal impact under the current rule logic due to the alternative prolonged dormancy condition.|
+
+|Parameter Tested|Impact|Assessment|
+|:---|:---|:---|
+|Dormancy Threshold|High|Primary tuning parameter influencing alert volume and sensitivity.|
+|Reactivation Volume Multiple|Low|Minimal impact under the current rule logic due to the alternative prolonged dormancy condition.|
 
 4. Recommended Production Rule : Keep same
 
