@@ -11,7 +11,7 @@ The objective is to demonstrate both SQL implementation and an understanding of 
 ---
 
 ## End-to-End Workflow
-
+<img width="517" height="318" alt="Screenshot 2026-07-24 115131" src="https://github.com/user-attachments/assets/0364b076-cf1a-4c4f-ba1a-9b356efcbc07" />
 
 
 ---
